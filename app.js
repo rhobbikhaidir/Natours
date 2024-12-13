@@ -1,6 +1,6 @@
 const express = require('express');
-const bodyParser = require('body-parser')
-const fs = require('fs')
+const bodyParser = require('body-parser');
+const fs = require('fs');
 const port = 3000;
 const app = express();
 
@@ -10,7 +10,7 @@ const tours = JSON.parse(
 
 app.use(express.urlencoded({ extended: true }));
 // This is required to handle urlencoded data
-app.use(express.json()); 
+app.use(express.json());
 // This to handle jsoan data coming from requests mainly post1
 
 // app.get('/', (req, res) => {
@@ -30,9 +30,8 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
-
 app.post('/api/v1/tours', (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
 
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
@@ -45,28 +44,33 @@ app.post('/api/v1/tours', (req, res) => {
       res.status(201).json({
         status: 'success',
         data: {
-            tour: newTour,
+          tour: newTour,
         },
-      }); 
+      });
     }
   );
 });
 
 app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params, '***ini params');
+  const newId = req.params.id * 1;
 
+  const tour = tours.find((el) => el?.id === newId);
 
-  console.log(req.params, '***ini params')
-  const newId = req.params.id * 1
-
-  const tour = tours.find((el) => el?.id === newId )
+  if(!tour) {
+  return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID'
+    })
+  }
 
   res.status(200).json({
     status: 'success',
     data: {
-      tour
-    }
-  })
-})
+      tour,
+    },
+  });
+});
 
 app.listen(port, () => {
   console.log(`app running on port ${port}...`);
